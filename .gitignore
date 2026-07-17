@@ -6,12 +6,12 @@ __pycache__/
 venv/
 .venv/
 
-# Data (large — keep metadata.csv tracked)
+# Raw source — not needed for demo
 Dataset/
 data/sample_images/
-data/embeddings.npy
-data/faiss_index.bin
-data/glance.db
+
+# Per-image label files (thousands — noisy, not used by pipeline)
+labels/
 
 # Codegraph
 .codegraph/
