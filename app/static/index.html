@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glance — Fashion Image Retrieval</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; font-family: 'Inter', -apple-system, sans-serif; }
+
+  body {
+    display: flex;
+    background: #FAF6F0;
+    color: #1A1A1A;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 340px;
+    min-width: 340px;
+    height: 100vh;
+    background: #1A1A1A;
+    color: #FAF6F0;
+    display: flex;
+    flex-direction: column;
+    padding: 28px 24px;
+    overflow-y: auto;
+    position: sticky;
+    top: 0;
+  }
+
+  .sidebar h1 {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    margin-bottom: 4px;
+  }
+  .sidebar .subtitle {
+    font-size: 13px;
+    color: rgba(250,246,240,0.5);
+    margin-bottom: 28px;
+  }
+
+  .sidebar label {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: rgba(250,246,240,0.6);
+    margin-bottom: 8px;
+  }
+
+  .input-wrap {
+    position: relative;
+    margin-bottom: 16px;
+  }
+
+  .input-wrap textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid rgba(250,246,240,0.15);
+    border-radius: 12px;
+    background: rgba(250,246,240,0.06);
+    color: #FAF6F0;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    resize: vertical;
+    min-height: 88px;
+    outline: none;
+    transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
+  }
+
+  .input-wrap textarea:focus {
+    border-color: rgba(250,246,240,0.35);
+    background: rgba(250,246,240,0.09);
+    box-shadow: 0 0 0 3px rgba(250,246,240,0.06);
+  }
+
+  .input-wrap textarea::placeholder {
+    color: rgba(250,246,240,0.3);
+  }
+
+  .search-btn {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 12px;
+    background: #FAF6F0;
+    color: #1A1A1A;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.25s, transform 0.15s;
+    margin-bottom: 12px;
+  }
+  .search-btn:hover { opacity: 0.85; }
+  .search-btn:active { transform: scale(0.97); }
+  .search-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+
+  .parsed-query {
+    font-size: 12px;
+    color: rgba(250,246,240,0.4);
+    line-height: 1.6;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: rgba(250,246,240,0.04);
+    min-height: 36px;
+    transition: opacity 0.4s;
+  }
+  .parsed-query.has-data {
+    color: rgba(250,246,240,0.65);
+    background: rgba(250,246,240,0.07);
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+    font-size: 11px;
+    color: rgba(250,246,240,0.2);
+    padding-top: 16px;
+  }
+
+  /* ── Main content ── */
+  .main {
+    flex: 1;
+    padding: 32px 36px;
+    overflow-y: auto;
+    max-height: 100vh;
+  }
+
+  .main-header {
+    margin-bottom: 24px;
+  }
+  .main-header h2 {
+    font-size: 22px;
+    font-weight: 500;
+    color: #1A1A1A;
+  }
+  .main-header .meta {
+    font-size: 13px;
+    color: rgba(26,26,26,0.4);
+    margin-top: 4px;
+    transition: opacity 0.4s;
+  }
+
+  /* ── Results grid ── */
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    background: #FFFFFF;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeIn 0.5s ease forwards;
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06), 0 12px 32px rgba(0,0,0,0.04);
+  }
+
+  @keyframes fadeIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card img {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    display: block;
+    background: #F0EDE6;
+  }
+
+  .card-body {
+    padding: 12px 14px 14px;
+  }
+  .card-body .filename {
+    font-size: 12px;
+    color: rgba(26,26,26,0.35);
+    margin-bottom: 6px;
+  }
+  .card-body .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .tag {
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+  .tag-category { background: #F0EDE6; color: #4A4540; }
+  .tag-color    { background: #E8E0D6; color: #4A4540; }
+  .tag-location { background: #DCD4C8; color: #4A4540; }
+  .tag-style    { background: #C8C0B4; color: #4A4540; }
+
+  .card-body .scores {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+    font-size: 11px;
+    color: rgba(26,26,26,0.4);
+  }
+
+  /* ── States ── */
+  .loading {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 0;
+    color: rgba(26,26,26,0.3);
+  }
+  .loading.active { display: flex; }
+
+  .spinner {
+    width: 28px; height: 28px;
+    border: 2px solid #E0D8CC;
+    border-top-color: #1A1A1A;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin-bottom: 12px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .empty-state {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 0;
+    color: rgba(26,26,26,0.25);
+    text-align: center;
+  }
+  .empty-state.active { display: flex; }
+  .empty-state .icon { font-size: 40px; margin-bottom: 12px; opacity: 0.4; }
+
+  #results-area.active + .empty-state,
+  #results-area.active + .loading { display: none; }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    body { flex-direction: column; }
+    .sidebar {
+      width: 100%; min-width: unset; height: auto; position: static;
+      padding: 20px 16px;
+    }
+    .main { padding: 20px 16px; max-height: none; }
+    .results-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── Sidebar ─── -->
+<aside class="sidebar">
+  <h1>Glance</h1>
+  <p class="subtitle">Fashion image retrieval</p>
+
+  <label for="query-input">Describe what you're looking for</label>
+  <div class="input-wrap">
+    <textarea id="query-input" placeholder="e.g. A person in a bright yellow raincoat" rows="3"></textarea>
+  </div>
+
+  <button class="search-btn" id="search-btn" onclick="search()">Search</button>
+
+  <div class="parsed-query" id="parsed-query">Attributes will appear here</div>
+
+  <div class="sidebar-footer">Glance · ML Internship Assignment</div>
+</aside>
+
+<!-- ─── Main content ─── -->
+<main class="main">
+  <div class="main-header">
+    <h2>Results</h2>
+    <div class="meta" id="result-meta">Enter a query to begin</div>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <span>Searching…</span>
+  </div>
+
+  <div class="empty-state active" id="empty-state">
+    <div class="icon">⌕</div>
+    <span>Your results will appear here</span>
+  </div>
+
+  <div class="results-grid" id="results-area"></div>
+</main>
+
+<script>
+  const input = document.getElementById('query-input');
+  const btn = document.getElementById('search-btn');
+  const resultsArea = document.getElementById('results-area');
+  const loading = document.getElementById('loading');
+  const emptyState = document.getElementById('empty-state');
+  const parsedEl = document.getElementById('parsed-query');
+  const metaEl = document.getElementById('result-meta');
+
+  // Enter key to search
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      search();
+    }
+  });
+
+  let animDelay = 0;
+
+  async function search() {
+    const q = input.value.trim();
+    if (!q) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Searching…';
+
+    // Show loading, hide results + empty
+    resultsArea.innerHTML = '';
+    resultsArea.classList.remove('active');
+    loading.classList.add('active');
+    emptyState.classList.remove('active');
+    parsedEl.textContent = '';
+    parsedEl.classList.remove('has-data');
+    metaEl.textContent = 'Searching…';
+
+    try {
+      const resp = await fetch(`/api/search?q=${encodeURIComponent(q)}&top_k=12`);
+      const data = await resp.json();
+
+      loading.classList.remove('active');
+
+      if (data.error) {
+        metaEl.textContent = `Error: ${data.error}`;
+        return;
+      }
+
+      // Show parsed query
+      const p = data.parsed;
+      const parts = [];
+      if (p.colors.length) parts.push(`colors: ${p.colors.join(', ')}`);
+      if (p.garments.length) parts.push(`garments: ${p.garments.join(', ')}`);
+      if (p.location) parts.push(`location: ${p.location}`);
+      if (p.style) parts.push(`style: ${p.style}`);
+      parsedEl.textContent = parts.length ? parts.join(' · ') : '(no attributes extracted)';
+      parsedEl.classList.toggle('has-data', parts.length > 0);
+
+      // Render results
+      if (!data.results || data.results.length === 0) {
+        metaEl.textContent = 'No results found';
+        emptyState.classList.add('active');
+        return;
+      }
+
+      metaEl.textContent = `${data.results.length} results for "${data.query}"`;
+
+      animDelay = 0;
+      data.results.forEach((r, i) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.style.animationDelay = `${i * 60}ms`;
+
+        card.innerHTML = `
+          <img src="${r.image_url}" alt="${r.filename}" loading="lazy"
+               onerror="this.parentElement.innerHTML='<div style=\\'padding:40px;text-align:center;color:#999;aspect-ratio:3/4;display:flex;align-items:center;justify-content:center\\'>Failed to load</div>'">
+          <div class="card-body">
+            <div class="filename">${r.filename}</div>
+            <div class="tags">
+              <span class="tag tag-category">${r.category || '—'}</span>
+              <span class="tag tag-color">${r.color || '—'}</span>
+              ${r.location ? `<span class="tag tag-location">${r.location}</span>` : ''}
+              ${r.style ? `<span class="tag tag-style">${r.style}</span>` : ''}
+            </div>
+            <div class="scores">
+              <span>CosSim: ${typeof r.cosine_score === 'number' ? r.cosine_score.toFixed(3) : '—'}</span>
+              <span>Attr: ${typeof r.attr_score === 'number' ? r.attr_score.toFixed(2) : '—'}</span>
+              <span>Comb: ${typeof r.combined_score === 'number' ? r.combined_score.toFixed(3) : '—'}</span>
+            </div>
+          </div>
+        `;
+        resultsArea.appendChild(card);
+      });
+    } catch (err) {
+      loading.classList.remove('active');
+      metaEl.textContent = `Error: ${err.message}`;
+      emptyState.classList.add('active');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Search';
+    }
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+# Core
+torch>=2.0.0
+torchvision>=0.15.0
+numpy>=1.24
+pandas>=2.0
+scikit-learn>=1.2
+pillow>=10.0
+tqdm>=4.65
+
+# Retrieval
+faiss-cpu>=1.7.4
+
+# CLIP
+transformers>=4.30
+fashion-clip>=0.1.7
+
+# Places365 (via torchvision models)
+# torchvision already included above
+
+# Evaluation
+tabulate>=0.9

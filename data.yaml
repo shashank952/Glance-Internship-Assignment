@@ -1,0 +1,34 @@
+names:
+  0: shirt
+  1: top, t-shirt, sweatshirt
+  2: sweater
+  3: cardigan
+  4: jacket
+  5: vest
+  6: pants
+  7: shorts
+  8: skirt
+  9: coat
+  10: dress
+  11: jumpsuit
+  12: cape
+  13: glasses
+  14: hat
+  15: headband, head covering, hair accessory
+  16: tie
+  17: glove
+  18: watch
+  19: belt
+  20: tights, stockings
+  21: sock
+  22: shoe
+  23: bag, wallet
+  24: scarf
+  25: hood
+  26: bow
+  27: flower
+  28: ruffle
+path: /kaggle/input/fashionpedia-dataset
+test: images/test
+train: images/train
+val: images/test

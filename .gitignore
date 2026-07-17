@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+venv/
+.venv/
+
+# Data (large — keep metadata.csv tracked)
+Dataset/
+data/sample_images/
+data/embeddings.npy
+data/faiss_index.bin
+data/glance.db
+
+# Codegraph
+.codegraph/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
