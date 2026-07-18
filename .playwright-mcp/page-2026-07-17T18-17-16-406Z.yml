@@ -1,0 +1,17 @@
+- generic [active] [ref=e1]:
+  - complementary [ref=e2]:
+    - heading "Glance" [level=1] [ref=e3]
+    - paragraph [ref=e4]: Fashion image retrieval
+    - generic [ref=e5]: Describe what you're looking for
+    - textbox "Describe what you're looking for" [ref=e7]:
+      - /placeholder: e.g. A person in a bright yellow raincoat
+    - button "Search" [ref=e8] [cursor=pointer]
+    - generic [ref=e9]: Attributes will appear here
+    - generic [ref=e10]: Glance · ML Internship Assignment
+  - main [ref=e11]:
+    - generic [ref=e12]:
+      - heading "Results" [level=2] [ref=e13]
+      - generic [ref=e14]: Enter a query to begin
+    - generic [ref=e15]:
+      - generic [ref=e16]: ⌕
+      - generic [ref=e17]: Your results will appear here
