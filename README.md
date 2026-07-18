@@ -248,18 +248,6 @@ Glance/
 
 The retrieve-then-rerank architecture is inherently scalable: FAISS search is bounded by index size (sub-linear with IVF/HNSW), and the reranker only processes a fixed window of candidates.
 
----
-
-## Why This Beats Vanilla CLIP
-
-| Failure mode | Vanilla CLIP | Glance |
-|--------------|-------------|--------|
-| Attribute swapping — *"red tie white shirt"* | Both score equally | Color bound to garment type via structured attribute rerank |
-| Location ignored — *"professional attire in office"* | Embedding dilutes scene signal | Explicit location tag in reranker (Q2: 0.60 → 1.00) |
-| Style underweighted — *"casual weekend outfit"* | No style signal | Explicit style tag (Q4: 0.20 → 1.00) |
-| Small objects diluted — *"yellow raincoat"* | Embedding averages over dominant background | Color + category field match (when metadata exists) |
-
----
 
 ## Limitations & Future Work
 
