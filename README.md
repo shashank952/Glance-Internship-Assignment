@@ -151,6 +151,25 @@ Open `http://localhost:8000` — sidebar query input, image grid results, cream/
 - **Location matters**: Dropping location collapses Q4 from 1.00 → 0.20
 - **Style matters**: Dropping style drops Q2 from 1.00 → 0.60 and Q5 from 0.60 → 0.20
 
+### Query Outputs
+
+**Query 1:** *"A person in a bright yellow raincoat."*
+![Query 1 results](images/Query-1.png)
+
+**Query 2:** *"Professional business attire inside a modern office."*
+![Query 2 results](images/Query-2.png)
+
+**Query 3:** *"Someone wearing a blue shirt sitting on a park bench."*
+![Query 3 results](images/Query-3.png)
+
+**Query 4:** *"Casual weekend outfit for a city walk."*
+![Query 4 results](images/Query4.png)
+
+**Query 5:** *"A red tie and a white shirt in a formal setting."*
+![Query 5 results](images/Query-5.png)
+
+---
+
 ### Q1 and Q3 are metadata-coverage failures, not pipeline failures
 
 - **Q1 (yellow raincoat)**: Zero images in the 2,500-sample set labeled both "yellow" and "coat". Yellow is genuinely rare in the data (0.03% of color labels).
