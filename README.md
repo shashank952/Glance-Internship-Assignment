@@ -25,24 +25,7 @@ This two-stage design (retrieve-then-rerank) is the standard production pattern 
 
 ## Architecture
 
-```
-                         ┌──────────────── INDEXER (offline) ────────────────┐
-   image ──► FashionCLIP vision encoder ──► 512-dim embedding                │
-         └─► KMeans (LAB, k=3) ──► dominant colors                           │
-         └─► FashionCLIP zero-shot ──► garment category (20 classes)         │
-         └─► FashionCLIP scene prompts ──► pseudo-location                   │
-         └─► FashionCLIP style prompts ──► pseudo-style                      │
-                         └─────────────────────► FAISS + SQLite ◄────────────┘
-
-   query ──► ┌──────────────── RETRIEVER (online) ──────────────────────────┐
-         │  1. Parse query ──► structured attributes (color[], garment[],  │
-         │     location?, style?)                                           │
-         │  2. CLIP encode query text                                       │
-         │  3. FAISS top-50 candidates                                      │
-         │  4. Rerank: 0.6 × cos_sim + 0.4 × attribute_match_score         │
-         │  5. Return top-k                                                 │
-         └──────────────────────────────────────────────────────────────────┘
-```
+![Glance system workflow diagram](images/workflow.png)
 
 ### Indexing pipeline
 
